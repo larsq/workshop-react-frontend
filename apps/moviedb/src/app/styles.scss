@@ -1,7 +1,3 @@
-.navigation {
-    display: flex;
-}
-
 .content {
     max-height: 100%;
     height: 100%;
@@ -107,25 +103,4 @@
     border: thin solid black;
     padding: 5px;
     border-radius: 5px;
-}
-
-
-
-.searchbar__component {
-    display: flex;
-    justify-items: center;
-    border: thin ridge darkgrey;
-    border-radius: 5px;
-    padding: 5px;
-}
-
-.searchbar__field {
-    appearance: none;
-    border: unset;
-    margin: unset;
-    outline: unset;
-    font-size: larger;
-    padding: unset;
-    width: 50ch;
-    height: 36px;
 }
