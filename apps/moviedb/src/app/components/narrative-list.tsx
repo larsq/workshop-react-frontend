@@ -1,11 +1,23 @@
 import '../styles/narrative-list.scss'
 import '../styles/support.scss'
+import {useState} from "react";
+import {NarrativeListElement} from "./narrative-list-element";
+import {NarrativeListResult} from "./narrative-list-result";
 
-export function NarrativeList() {
+export interface NarrativeListProps {
+  titles: string[]
+}
+
+export interface NarrativeListStateProps {
+  selectedTitle?: string
+}
+
+export function NarrativeList(props: NarrativeListProps) {
+  const [state, setState] = useState<NarrativeListStateProps>({})
+
   return <aside className="search-result">
-    <article className="search-result__item search-result__item--selected">Fun with Dick & Jane</article>
-    <article className="search-result__item">The Mitchells vs. The Machines</article>
+    {props.titles.map(title => <NarrativeListElement title={title} key={title} isSelected={title === state.selectedTitle}/>)}
     <div className="support__v-gap"></div>
-    <footer className="search-result__footer">2 matches</footer>
+    <NarrativeListResult matches={props.titles.length}/>
   </aside>
 }

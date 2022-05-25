@@ -1,7 +1,13 @@
 import '../styles/narrative-countries.scss'
+import {Country} from "../model/country";
+import {NarrativeCountriesElement} from "./narrative-countries-element";
 
-export function NarrativeCountries() {
+export interface NarrativeCountriesProps {
+  countries: Country[]
+}
+
+export function NarrativeCountries(props: NarrativeCountriesProps) {
   return <section className="narrative__countries">
-    <div className="narrative__country"><img src="https://flagcdn.com/64x48/us.png" alt="United States"></img></div>
+    {props.countries.map(country => <NarrativeCountriesElement country={country} key={country.countryCode}/>)}
   </section>
 }
