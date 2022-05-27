@@ -10,7 +10,9 @@ export interface NarrativeProps {
 
 export function Narrative(props: NarrativeProps) {
   if (props.narrative === undefined) {
-    return <div/>
+    return <article className="narrative">
+      <i>No narrative selected, please select one</i>
+    </article>
   }
 
   return <article className="narrative">
