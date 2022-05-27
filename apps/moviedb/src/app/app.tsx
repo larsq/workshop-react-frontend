@@ -5,6 +5,7 @@ import {Narrative} from "./components/narrative";
 import {NarrativeList} from "./components/narrative-list";
 import {Narrative as NarrativeModel} from './model/narrative'
 import {useState} from "react";
+import {fixture} from "./fixture";
 
 export interface AppState {
   narrative: NarrativeModel[],
@@ -13,7 +14,8 @@ export interface AppState {
 
 export function App() {
   const [state, setState] = useState<AppState>({
-    narrative: []
+    narrative: fixture,
+    selected: fixture[0]
   })
 
 
