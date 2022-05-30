@@ -1,10 +1,11 @@
 import '../styles/narrative-list.scss'
 import '../styles/support.scss'
-import {useCallback, useEffect} from "react";
+import {useCallback, useEffect, useMemo} from "react";
 import {NarrativeListElement} from "./narrative-list-element";
 import {NarrativeListResult} from "./narrative-list-result";
 import {useSearchState, useSearchStateUpdate} from "./search-service";
 import {SearchState} from "../context/search-service.context";
+import {Narrative} from "../model/narrative";
 
 function includesSelection(searchState: SearchState) {
   return searchState.narratives.find(narrative => narrative.title === searchState.selectedNarrative?.title) !== undefined;
@@ -18,7 +19,11 @@ function shouldAutoselectOnlyAvailableNarrative(searchState: SearchState) {
   return searchState.narratives.length === 1 && searchState.selectedNarrative?.title !== searchState.narratives[0].title;
 }
 
-export function NarrativeList() {
+export interface NarrativeListProps {
+  maxNumberOfHits: number
+}
+
+export function NarrativeList(props: NarrativeListProps) {
   const searchState = useSearchState();
   const updateSearchState = useSearchStateUpdate();
 
@@ -54,11 +59,19 @@ export function NarrativeList() {
 
   }, [searchState.narratives, updateSearchState])
 
+  const cappedList: Narrative[] = useMemo(() => {
+    return searchState.narratives.length > props.maxNumberOfHits ? searchState.narratives.slice(0, props.maxNumberOfHits) : searchState.narratives
+  }, [props.maxNumberOfHits, searchState.narratives])
+
+  const reachMaximumSize: boolean = useMemo(() => {
+    return searchState.narratives.length > props.maxNumberOfHits
+  }, [props.maxNumberOfHits, searchState.narratives])
+
   return <aside className="search-result">
-    {searchState.narratives.map(narrative => <NarrativeListElement title={narrative.title} key={narrative.title}
-                                                                   isSelected={narrative.title === searchState.selectedNarrative?.title}
-                                                                   handleSelectionCallback={handleSelection}/>)}
+    {cappedList.map(narrative => <NarrativeListElement title={narrative.title} key={narrative.title}
+                                                       isSelected={narrative.title === searchState.selectedNarrative?.title}
+                                                       handleSelectionCallback={handleSelection}/>)}
     <div className="support__v-gap"></div>
-    <NarrativeListResult matches={searchState.narratives.length}/>
+    <NarrativeListResult matches={cappedList.length} reachMaximumSize={reachMaximumSize}/>
   </aside>
 }

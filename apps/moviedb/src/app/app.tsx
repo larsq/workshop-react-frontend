@@ -12,7 +12,7 @@ export function App() {
         <AppHeader></AppHeader>
         <div className="support__filler"></div>
         <main className="content">
-          <NarrativeList></NarrativeList>
+          <NarrativeList maxNumberOfHits={25}></NarrativeList>
           <Narrative></Narrative>
         </main>
       </div>
