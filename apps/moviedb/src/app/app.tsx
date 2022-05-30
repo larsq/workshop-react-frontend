@@ -3,30 +3,20 @@ import './styles/support.scss'
 import {AppHeader} from './components/header'
 import {Narrative} from "./components/narrative";
 import {NarrativeList} from "./components/narrative-list";
-import {Narrative as NarrativeModel} from './model/narrative'
-import {useState} from "react";
-
-export interface AppState {
-  narrative: NarrativeModel[],
-  selected?: NarrativeModel
-}
+import {SearchService} from "./components/search-service";
 
 export function App() {
-  const [state, setState] = useState<AppState>({
-    narrative: [],
-    selected: undefined
-  })
-
-
   return (
-    <div className="support__wrapper">
-      <AppHeader></AppHeader>
-      <div className="support__filler"></div>
-      <main className="content">
-        <NarrativeList titles={state.narrative.map(narrative => narrative.title)}></NarrativeList>
-        <Narrative narrative={state.selected}></Narrative>
-      </main>
-    </div>
+    <SearchService>
+      <div className="support__wrapper">
+        <AppHeader></AppHeader>
+        <div className="support__filler"></div>
+        <main className="content">
+          <NarrativeList></NarrativeList>
+          <Narrative></Narrative>
+        </main>
+      </div>
+    </SearchService>
   );
 }
 

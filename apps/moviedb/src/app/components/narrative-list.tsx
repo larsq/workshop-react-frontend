@@ -1,49 +1,64 @@
 import '../styles/narrative-list.scss'
 import '../styles/support.scss'
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect} from "react";
 import {NarrativeListElement} from "./narrative-list-element";
 import {NarrativeListResult} from "./narrative-list-result";
+import {useSearchState, useSearchStateUpdate} from "./search-service";
+import {SearchState} from "../context/search-service.context";
 
-export interface NarrativeListProps {
-  titles: string[]
+function includesSelection(searchState: SearchState) {
+  return searchState.narratives.find(narrative => narrative.title === searchState.selectedNarrative?.title) !== undefined;
 }
 
-export interface NarrativeListStateProps {
-  selectedTitle?: string
+function shouldUnselectIfAvailableNarrativesAreCleared(searchState: SearchState) {
+  return searchState.narratives.length === 0 && searchState.selectedNarrative !== undefined;
 }
 
-export function NarrativeList(props: NarrativeListProps) {
-  const [state, setState] = useState<NarrativeListStateProps>({})
+function shouldAutoselectOnlyAvailableNarrative(searchState: SearchState) {
+  return searchState.narratives.length === 1 && searchState.selectedNarrative?.title !== searchState.narratives[0].title;
+}
 
+export function NarrativeList() {
+  const searchState = useSearchState();
+  const updateSearchState = useSearchStateUpdate();
+
+  // triggers when list of narratives change
   useEffect(() => {
-    if (props.titles.length === 0) {
-      setState({selectedTitle: undefined})
+    // unselect if there is no narrative to select
+    if (shouldUnselectIfAvailableNarrativesAreCleared(searchState)) {
+      console.log('narratives cleared, unselecting current one')
+      updateSearchState.select(undefined);
       return;
     }
 
-    if (props.titles.length === 1) {
-      setState({selectedTitle: props.titles[0]})
+    // auto-select if there is only a single narrative to display
+    if (shouldAutoselectOnlyAvailableNarrative(searchState)) {
+      console.log('auto-select narrative', searchState.narratives[0])
+      updateSearchState.select(searchState.narratives[0])
       return;
     }
 
-    if (state.selectedTitle !== undefined && !props.titles.includes(state.selectedTitle)) {
-      setState({selectedTitle: undefined})
+    // if title is select that is not present any longer, unselect it
+    if (searchState.selectedNarrative !== undefined && !includesSelection(searchState)) {
+      console.log('selected narrative not part of available ones')
+      updateSearchState.select(undefined);
       return;
     }
-  }, [props.titles, state.selectedTitle])
+
+  }, [searchState.narratives, searchState.selectedNarrative, searchState, updateSearchState])
 
   const handleSelection = useCallback((val: string) => {
-    if (props.titles.includes(val)) {
-      setState({selectedTitle: val})
-    } else {
-      setState({selectedTitle: undefined})
-    }
-  }, [props.titles])
+
+    const selected = searchState.narratives.find(narrative => narrative.title === val)
+    updateSearchState.select(selected)
+
+  }, [searchState.narratives, updateSearchState])
 
   return <aside className="search-result">
-    {props.titles.map(title => <NarrativeListElement title={title} key={title} isSelected={title === state.selectedTitle}
-                                                     handleSelectionCallback={handleSelection}/>)}
+    {searchState.narratives.map(narrative => <NarrativeListElement title={narrative.title} key={narrative.title}
+                                                                   isSelected={narrative.title === searchState.selectedNarrative?.title}
+                                                                   handleSelectionCallback={handleSelection}/>)}
     <div className="support__v-gap"></div>
-    <NarrativeListResult matches={props.titles.length}/>
+    <NarrativeListResult matches={searchState.narratives.length}/>
   </aside>
 }

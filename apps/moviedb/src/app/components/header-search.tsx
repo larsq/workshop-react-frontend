@@ -1,10 +1,11 @@
 import '../styles/support.scss'
 import '../styles/header-search.scss'
 import {useRef} from "react";
+import {useSearchStateUpdate} from "./search-service";
 
 export function HeaderSearch() {
   const searchbar = useRef<HTMLInputElement>(null)
-
+  const mutateSearchState = useSearchStateUpdate()
 
   function handleSearch(): void {
     const ref: HTMLInputElement | null = searchbar.current
@@ -15,11 +16,18 @@ export function HeaderSearch() {
 
     const val = ref.value.toLowerCase()
 
+    if (val.length === 0) {
+      mutateSearchState.updateNarratives([])
+      return;
+    }
+
     if (val.length < 3) {
       return;
     }
 
-    console.log('"', val, '"')
+    Promise.resolve([]).then(resp => {
+      mutateSearchState.updateNarratives(resp)
+    })
   }
 
   return <section className="navigation__searchbar">
