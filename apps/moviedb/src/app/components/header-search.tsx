@@ -2,6 +2,7 @@ import '../styles/support.scss'
 import '../styles/header-search.scss'
 import {useRef} from "react";
 import {useSearchStateUpdate} from "./search-service";
+import {findNarrative} from "../service/find-narrative";
 
 export function HeaderSearch() {
   const searchbar = useRef<HTMLInputElement>(null)
@@ -25,7 +26,7 @@ export function HeaderSearch() {
       return;
     }
 
-    Promise.resolve([]).then(resp => {
+    findNarrative(val).then(resp => {
       mutateSearchState.updateNarratives(resp)
     })
   }
